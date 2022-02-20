@@ -12,7 +12,7 @@ fn main() -> io::Result<()> {
         let line = line?;
         let guess = line.trim();
 
-        println!("{} {}", guess, hint(guess, answer).to_tile_string());
+        println!("{} {:?}", guess, answer.to_string().get_hint(guess));
     }
 
     Ok(())
