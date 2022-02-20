@@ -3,6 +3,7 @@ use std::cmp::PartialOrd;
 use std::fs::File;
 use std::io::{self, prelude::*, BufReader};
 use wordle::*;
+use std::io::Write;
 
 struct Chmin<T: PartialOrd> {
     current: Option<T>,
@@ -45,6 +46,8 @@ fn main() -> io::Result<()> {
         .map(|x| x.unwrap().trim().to_string())
         .collect::<Vec<_>>();
 
+    let out = File::create("../data/minimax_2_out.txt")?;
+
     let mut chmin = Chmin::new();
 
     let mut memo = vec![vec![0; guesses.len()]; answers.len()];
@@ -73,6 +76,7 @@ fn main() -> io::Result<()> {
 
         let max = counts.into_iter().max().unwrap();
         if chmin.apply(max) {
+            writeln!(&out, "{}, {}: {}", guesses[i], guesses[j], max);
             println!("{}, {}: {}", guesses[i], guesses[j], max);
         }
     }
