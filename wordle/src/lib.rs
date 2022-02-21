@@ -1,3 +1,9 @@
+use std::fs::File;
+use std::io::Write;
+use std::io::{self, prelude::*, BufReader};
+
+pub mod cmp;
+
 #[derive(Debug, PartialEq, Clone)]
 pub enum Tile {
     Green,
@@ -25,12 +31,12 @@ impl Tile {
         }
     }
 
-    pub fn from_integer(num: i32) -> Tile{
+    pub fn from_integer(num: i32) -> Tile {
         match num {
             0 => Tile::Black,
             1 => Tile::Yellow,
             2 => Tile::Green,
-            _ => panic!()
+            _ => panic!(),
         }
     }
 }
@@ -45,23 +51,24 @@ impl Hint {
         self.tiles.iter().fold(0, |acc, x| acc * 3 + x.to_integer())
     }
 
-    pub fn from_integer(num: i32, size: usize) -> Hint{
+    pub fn from_integer(num: i32, size: usize) -> Hint {
         let mut num = num;
         let mut tiles = vec![Tile::Black; size];
         for i in (0..size).rev() {
             let res = num % 3;
             tiles[i] = Tile::from_integer(res);
-            num = (num - res)/3;
+            num = (num - res) / 3;
         }
         Hint { tiles }
     }
 }
 
-impl ToString for Hint{
-    fn to_string(&self) -> String{
-        self.tiles.iter()
-        .map(|tile| tile.to_string())
-        .fold(String::from(""), |acc, s| acc + &s)
+impl ToString for Hint {
+    fn to_string(&self) -> String {
+        self.tiles
+            .iter()
+            .map(|tile| tile.to_string())
+            .fold(String::from(""), |acc, s| acc + &s)
     }
 }
 
@@ -86,4 +93,22 @@ impl GetHint for String {
             .collect();
         Hint { tiles }
     }
+}
+
+pub enum WordType {
+    All,
+    Answer,
+}
+
+pub fn get_words(w: WordType) -> Vec<String> {
+    let path = match w {
+        WordType::All => "../data/words_oa.txt",
+        WordType::Answer => "../data/words_ma.txt",
+    };
+    let file = File::open(path).unwrap();
+    let reader = BufReader::new(file);
+    reader
+        .lines()
+        .map(|x| x.unwrap().trim().to_string())
+        .collect::<Vec<_>>()
 }
